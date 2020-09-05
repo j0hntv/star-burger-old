@@ -2,6 +2,7 @@ import json
 
 from django.templatetags.static import static
 from django.http import JsonResponse
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -63,7 +64,12 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     data=request.data
-    print(data)
+
+    products = data.get('products')
+
+    if not all((products, isinstance(products, list))):
+        return Response({'error': 'There is no order item or it\'s a wrong format'}, status=status.HTTP_400_BAD_REQUEST)
+
     order = Order.objects.create(
         address=data['address'],
         firstname=data['firstname'],
