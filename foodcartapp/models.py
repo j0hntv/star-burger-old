@@ -74,7 +74,7 @@ class Order(models.Model):
     phonenumber = models.CharField('Номер телефона', max_length=50)
 
     def __str__(self):
-        return f'{self.firstname} {self.lastname} {self.address}'
+        return f'{self.firstname} {self.lastname}, {self.address}'
 
     class Meta:
         verbose_name = 'заказ'
