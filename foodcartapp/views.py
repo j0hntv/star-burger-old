@@ -66,15 +66,38 @@ def register_order(request):
     data=request.data
 
     products = data.get('products')
+    address = data.get('address')
+    firstname = data.get('firstname')
+    lastname = data.get('lastname')
+    phonenumber = data.get('phonenumber')
 
     if not all((products, isinstance(products, list))):
-        return Response({'error': 'There is no order item or it\'s a wrong format'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'There is no order item or it\'s not a list'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not all((address, isinstance(address, str))):
+        return Response({'error': 'The key \'address\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not all((firstname, isinstance(firstname, str))):
+        return Response({'error': 'The key \'firstname\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not all((lastname, isinstance(lastname, str))):
+        return Response({'error': 'The key \'lastname\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not all((phonenumber, isinstance(phonenumber, str))):
+        return Response({'error': 'The key \'phonenumber\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
+
+    available_products = Product.objects.all()
+    product_ids = set([product.id for product in available_products])
+    received_ids = set([product['product'] for product in products])
+
+    if not received_ids.issubset(product_ids):
+        return Response({'error': f'Product id does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
     order = Order.objects.create(
-        address=data['address'],
-        firstname=data['firstname'],
-        lastname=data['lastname'],
-        phonenumber=data['phonenumber'],
+        address=address,
+        firstname=firstname,
+        lastname=lastname,
+        phonenumber=phonenumber,
     )
 
     products = data['products']
