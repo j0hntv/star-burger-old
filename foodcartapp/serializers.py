@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ValidationError
 
 from .models import Order, OrderItem
 
@@ -14,3 +14,9 @@ class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
         fields = ('address', 'firstname', 'lastname', 'phonenumber', 'products')
+
+    def validate_products(self, value):
+        if not value:
+            raise ValidationError('Product list cannot be empty')
+
+        return value

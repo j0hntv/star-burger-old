@@ -4,7 +4,6 @@ from django.templatetags.static import static
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.serializers import ValidationError
 
 from .models import Product, Order, OrderItem
 from .serializers import OrderSerializer
@@ -67,11 +66,6 @@ def register_order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    product_fields = serializer.validated_data['products']
-
-    if not product_fields:
-        raise ValidationError('Product list cannot be empty')
-
     order = Order.objects.create(
         address=serializer.validated_data['address'],
         firstname=serializer.validated_data['firstname'],
@@ -79,6 +73,7 @@ def register_order(request):
         phonenumber=serializer.validated_data['phonenumber'],
     )
 
+    product_fields = serializer.validated_data['products']
     products = [OrderItem(order=order, **fields) for fields in product_fields]
     OrderItem.objects.bulk_create(products)
 
