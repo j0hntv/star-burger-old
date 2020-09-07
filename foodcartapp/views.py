@@ -2,11 +2,12 @@ import json
 
 from django.templatetags.static import static
 from django.http import JsonResponse
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
 
 from .models import Product, Order, OrderItem
+from .serializers import OrderSerializer
 
 
 def banners_list_api(request):
@@ -63,50 +64,22 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-    data=request.data
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
-    products = data.get('products')
-    address = data.get('address')
-    firstname = data.get('firstname')
-    lastname = data.get('lastname')
-    phonenumber = data.get('phonenumber')
+    product_fields = serializer.validated_data['products']
 
-    if not all((products, isinstance(products, list))):
-        return Response({'error': 'There is no order item or it\'s not a list'}, status=status.HTTP_400_BAD_REQUEST)
-
-    if not all((address, isinstance(address, str))):
-        return Response({'error': 'The key \'address\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
-
-    if not all((firstname, isinstance(firstname, str))):
-        return Response({'error': 'The key \'firstname\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
-
-    if not all((lastname, isinstance(lastname, str))):
-        return Response({'error': 'The key \'lastname\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
-
-    if not all((phonenumber, isinstance(phonenumber, str))):
-        return Response({'error': 'The key \'phonenumber\' is not specified or not a str'}, status=status.HTTP_400_BAD_REQUEST)
-
-    available_products = Product.objects.all()
-    product_ids = set([product.id for product in available_products])
-    received_ids = set([product['product'] for product in products])
-
-    if not received_ids.issubset(product_ids):
-        return Response({'error': f'Product id does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+    if not product_fields:
+        raise ValidationError('Product list cannot be empty')
 
     order = Order.objects.create(
-        address=address,
-        firstname=firstname,
-        lastname=lastname,
-        phonenumber=phonenumber,
+        address=serializer.validated_data['address'],
+        firstname=serializer.validated_data['firstname'],
+        lastname=serializer.validated_data['lastname'],
+        phonenumber=serializer.validated_data['phonenumber'],
     )
 
-    products = data['products']
-    for product in products:
-        current_product = Product.objects.get(id=product['product'])
-        OrderItem.objects.create(
-            order=order,
-            product=current_product,
-            quantity=product['quantity'],
-        )
+    products = [OrderItem(order=order, **fields) for fields in product_fields]
+    OrderItem.objects.bulk_create(products)
 
     return Response({})

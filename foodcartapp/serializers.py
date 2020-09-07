@@ -6,10 +6,11 @@ from .models import Order, OrderItem
 class OrderItemSerializer(ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ('order', 'product', 'quantity')
+        fields = ('product', 'quantity')
 
 
 class OrderSerializer(ModelSerializer):
+    products = OrderItemSerializer(many=True)
     class Meta:
         model = Order
-        fields = ('address', 'firstname', 'lastname', 'phonenumber')
+        fields = ('address', 'firstname', 'lastname', 'phonenumber', 'products')
