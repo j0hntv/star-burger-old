@@ -1,22 +1,22 @@
-from rest_framework.serializers import ModelSerializer, ValidationError
+from rest_framework import serializers
 
 from .models import Order, OrderItem
 
 
-class OrderItemSerializer(ModelSerializer):
+class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ('product', 'quantity')
 
 
-class OrderSerializer(ModelSerializer):
-    products = OrderItemSerializer(many=True)
+class OrderSerializer(serializers.ModelSerializer):
+    products = OrderItemSerializer(many=True, write_only=True)
     class Meta:
         model = Order
-        fields = ('address', 'firstname', 'lastname', 'phonenumber', 'products')
+        fields = ('id', 'address', 'firstname', 'lastname', 'phonenumber', 'products')
 
     def validate_products(self, value):
         if not value:
-            raise ValidationError('Product list cannot be empty')
+            raise serializers.ValidationError('Product list cannot be empty')
 
         return value
