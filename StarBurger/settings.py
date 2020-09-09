@@ -110,6 +110,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+USE_THOUSAND_SEPARATOR = True
+
 STATIC_URL = '/static/'
 
 INTERNAL_IPS = [
