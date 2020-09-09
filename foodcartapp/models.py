@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import DecimalField, F, Sum
 
 
 class Restaurant(models.Model):
@@ -67,11 +68,20 @@ class RestaurantMenuItem(models.Model):
         ]
 
 
+class QuerySetOrder(models.QuerySet):
+    def total_price(self):
+        return self.annotate(
+            total_price=Sum(F('order_items__price') * F('order_items__quantity'), output_field=DecimalField())
+        )
+
+
 class Order(models.Model):
     address = models.CharField('Адрес доставки', max_length=100)
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = models.CharField('Номер телефона', max_length=50)
+
+    objects = QuerySetOrder.as_manager()
 
     def __str__(self):
         return f'{self.firstname} {self.lastname}, {self.address}'
