@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from django.shortcuts import reverse
+from django.shortcuts import redirect, reverse
 
 from .models import Restaurant, Product, RestaurantMenuItem, ProductCategory, Order, OrderItem
 
@@ -113,3 +113,9 @@ class OrderAdmin(admin.ModelAdmin):
         OrderItemInLine,
     ]
     list_display = ('lastname', 'firstname', 'address', 'phonenumber')
+
+    def response_change(self, request, obj):
+        if 'next' in request.GET:
+            return redirect('restaurateur:view_orders')
+
+        return super().response_change(request, obj)
