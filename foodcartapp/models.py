@@ -88,6 +88,7 @@ class Order(models.Model):
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = models.CharField('Номер телефона', max_length=50)
     status = models.CharField('Статус заказа', max_length=15, default=UNPROCESSED, choices=STATUSES)
+    comment = models.TextField('Комментарий', blank=True)
 
     objects = QuerySetOrder.as_manager()
 
