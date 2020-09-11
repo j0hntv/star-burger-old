@@ -77,22 +77,24 @@ class QuerySetOrder(models.QuerySet):
 
 
 class Order(models.Model):
-    PROCESSED = 'PROCESSED'
-    UNPROCESSED = 'UNPROCESSED'
-
     STATUSES = (
-        (PROCESSED, 'Обработанный'),
-        (UNPROCESSED, 'Необработанный'),
+        ('PROCESSED', 'Обработанный'),
+        ('UNPROCESSED', 'Необработанный'),
+    )
+    PAYMENTS = (
+        ('CASH', 'Наличные'),
+        ('NONCASH', 'Электронно'),
     )
     address = models.CharField('Адрес доставки', max_length=100)
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = models.CharField('Номер телефона', max_length=50)
-    status = models.CharField('Статус заказа', max_length=15, default=UNPROCESSED, choices=STATUSES)
+    status = models.CharField('Статус заказа', max_length=15, choices=STATUSES, default='UNPROCESSED')
     comment = models.TextField('Комментарий', blank=True)
     registrated_at = models.DateTimeField('Время заказа', default=timezone.now, blank=True)
     called_at = models.DateTimeField('Время звонка', blank=True, null=True)
     delivered_at = models.DateTimeField('Время доставки', blank=True, null=True)
+    payment = models.CharField('Способ оплаты', max_length=15, choices=PAYMENTS, default='CASH')
 
     objects = QuerySetOrder.as_manager()
 
