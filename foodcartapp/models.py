@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import DecimalField, F, Sum
+from django.utils import timezone
 
 
 class Restaurant(models.Model):
@@ -89,6 +90,9 @@ class Order(models.Model):
     phonenumber = models.CharField('Номер телефона', max_length=50)
     status = models.CharField('Статус заказа', max_length=15, default=UNPROCESSED, choices=STATUSES)
     comment = models.TextField('Комментарий', blank=True)
+    registrated_at = models.DateTimeField('Время заказа', default=timezone.now, blank=True)
+    called_at = models.DateTimeField('Время звонка', blank=True, null=True)
+    delivered_at = models.DateTimeField('Время доставки', blank=True, null=True)
 
     objects = QuerySetOrder.as_manager()
 
