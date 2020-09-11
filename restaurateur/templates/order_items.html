@@ -39,8 +39,8 @@
           <details>
             <summary>Развернуть</summary>
             <ul>
-            {% for restaurant in item.get_order_restaurants %}
-              <li>{{ restaurant }}</li>
+            {% for address, distance in item.get_order_restaurants_with_distances.items|dictsort:1 %}
+              <li>{{ address }} <b>{{ distance|floatformat }} км.</b></li>
             {% empty %}
               <li>Полностью заказа нет ни в одном ресторане! А-а-а-а-а!!!</li>
             {% endfor %}
