@@ -106,6 +106,12 @@ class Order(models.Model):
         verbose_name_plural = 'заказы'
         ordering = ('-status',)
 
+    def get_order_restaurants(self):
+        products = [order_item.product for order_item in self.order_items.all()]
+        menu_items = [product.menu_items.all() for product in products]
+        restaurants = [set([restaurants.restaurant for restaurants in menu_item]) for menu_item in menu_items]
+        return set.intersection(*restaurants)
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
