@@ -76,10 +76,18 @@ class QuerySetOrder(models.QuerySet):
 
 
 class Order(models.Model):
+    PROCESSED = 'PROCESSED'
+    UNPROCESSED = 'UNPROCESSED'
+
+    STATUSES = (
+        (PROCESSED, 'Обработанный'),
+        (UNPROCESSED, 'Необработанный'),
+    )
     address = models.CharField('Адрес доставки', max_length=100)
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = models.CharField('Номер телефона', max_length=50)
+    status = models.CharField('Статус заказа', max_length=15, default=UNPROCESSED, choices=STATUSES)
 
     objects = QuerySetOrder.as_manager()
 
@@ -89,12 +97,13 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
+        ordering = ('-status',)
 
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items')
-    quantity = models.IntegerField(verbose_name='Количество', validators=[MinValueValidator(0), MaxValueValidator(50)])
+    quantity = models.IntegerField(verbose_name='Количество', validators=[MinValueValidator(1), MaxValueValidator(50)])
     price = models.DecimalField('Стоимость заказа', max_digits=8, decimal_places=2)
 
     class Meta:
