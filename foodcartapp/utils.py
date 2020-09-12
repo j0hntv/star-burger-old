@@ -1,11 +1,24 @@
 import requests
-from geopy.distance import distance
 from django.conf import settings
+from django.core.cache import cache
+from geopy.distance import distance
 
 
 APIKEY = settings.YANDEX_GEOCODER_KEY
 
 
+def cached(get_distance_func):
+    def wrapper(*args, **kwargs):
+        coordinates = cache.get(*args)
+        if not coordinates:
+            coordinates = get_distance_func(*args)
+            cache.set(*args, coordinates)
+        return coordinates
+
+    return wrapper
+
+
+@cached
 def fetch_coordinates(place):
     base_url = "https://geocode-maps.yandex.ru/1.x"
     params = {"geocode": place, "apikey": APIKEY, "format": "json"}
