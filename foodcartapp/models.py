@@ -1,10 +1,13 @@
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import DecimalField, F, Sum
 from django.utils import timezone
+from geopy.distance import distance
 
-from .utils import get_distance
+from .utils import add_coordinates
+
 
 class Restaurant(models.Model):
     name = models.CharField('название', max_length=50)
@@ -111,18 +114,11 @@ class Order(models.Model):
         products = [order_item.product for order_item in self.order_items.all()]
         menu_items = [product.menu_items.all() for product in products]
         restaurants = [set([restaurants.restaurant for restaurants in menu_item]) for menu_item in menu_items]
-        return set.intersection(*restaurants)
+        return list(set.intersection(*restaurants))
 
     def get_order_restaurants_with_distances(self):
-        restaurants = self.get_order_restaurants()
-        if not restaurants:
-            return
-
-        restaurants_with_distances = {
-            restaurant: get_distance(restaurant.address, self.address) for restaurant in restaurants
-        }
-
-        return restaurants_with_distances
+        order_restaurants = add_coordinates(self.get_order_restaurants())
+        return {restaurant: distance(restaurant.coordinates, self.coordinates).km for restaurant in order_restaurants}
 
 
 class OrderItem(models.Model):

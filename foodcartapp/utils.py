@@ -29,5 +29,5 @@ def add_coordinates(queryset):
 
         item.coordinates = coordinates
 
-    cache.set_many(noncache_coordinates)
+    cache.set_many(noncache_coordinates, timeout=None)
     return queryset
