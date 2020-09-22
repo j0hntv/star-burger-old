@@ -14,11 +14,11 @@ def fetch_coordinates(place):
     places_found = response.json()['response']['GeoObjectCollection']['featureMember']
     most_relevant = places_found[0]
     lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
-    return lon, lat
+    return lat, lon
 
 
 def add_coordinates(queryset):
-    cache_coordinates = cache.get_many(item.address for item in queryset)
+    cache_coordinates = cache.get_many([item.address for item in queryset])
     noncache_coordinates = {}
 
     for item in queryset:
