@@ -117,7 +117,7 @@ class Order(models.Model):
         return list(set.intersection(*restaurants))
 
     def get_order_restaurants_with_distances(self):
-        restaurants = add_coordinates(self.get_order_restaurants())
+        restaurants = add_coordinates(self.get_order_restaurants()) # similar queries
         return {restaurant: distance(restaurant.coordinates, self.coordinates).km for restaurant in restaurants}
 
 
