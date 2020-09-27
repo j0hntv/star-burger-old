@@ -124,5 +124,6 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
     readonly_fields = ('get_preview',)
-    list_display = ('title', 'text', 'get_preview',)
+    list_display = ('title', 'text', 'get_preview', 'is_active')
+    list_editable = ('is_active',)
 

@@ -137,6 +137,7 @@ class Banner(models.Model):
     image = models.ImageField('Картинка', upload_to='banners')
     title = models.CharField('Название', max_length=50)
     text = models.TextField('Описание')
+    is_active = models.BooleanField('Показывать', default=False)
 
     def __str__(self):
         return self.title

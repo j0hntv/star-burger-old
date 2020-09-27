@@ -9,7 +9,7 @@ from .serializers import OrderSerializer
 
 
 def banners_list_api(request):
-    banners = Banner.objects.all()
+    banners = Banner.objects.filter(is_active=True)
     return JsonResponse(
         [{'title': banner.title, 'src': banner.image.url, 'text': banner.text} for banner in banners],
         safe=False,
