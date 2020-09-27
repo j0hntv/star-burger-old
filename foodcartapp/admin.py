@@ -121,4 +121,8 @@ class OrderAdmin(admin.ModelAdmin):
         return super().response_change(request, obj)
 
 
-admin.site.register(Banner)
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    readonly_fields = ('get_preview',)
+    list_display = ('title', 'text', 'get_preview',)
+

@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import DecimalField, F, Sum
 from django.utils import timezone
+from django.utils.html import format_html
 from geopy.distance import distance
 
 from .utils import add_coordinates
@@ -143,3 +144,8 @@ class Banner(models.Model):
     class Meta:
         verbose_name = 'Баннер'
         verbose_name_plural = 'Баннеры'
+
+    def get_preview(self):
+        return format_html(f'<img src="{self.image.url}" width="500" />')
+
+    get_preview.short_description = 'Просмотр'
