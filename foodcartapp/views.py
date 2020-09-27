@@ -4,32 +4,17 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem, Banner
 from .serializers import OrderSerializer
 
 
 def banners_list_api(request):
-    # FIXME move data to db?
-    return JsonResponse([
-        {
-            'title': 'Burger',
-            'src': static('burger.jpg'),
-            'text': 'Tasty Burger at your door step',
-        },
-        {
-            'title': 'Spices',
-            'src': static('food.jpg'),
-            'text': 'All Cuisines',
-        },
-        {
-            'title': 'New York',
-            'src': static('tasty.jpg'),
-            'text': 'Food is incomplete without a tasty dessert',
-        }
-    ], safe=False, json_dumps_params={
-        'ensure_ascii': False,
-        'indent': 4,
-    })
+    banners = Banner.objects.all()
+    return JsonResponse(
+        [{'title': banner.title, 'src': banner.image.url, 'text': banner.text} for banner in banners],
+        safe=False,
+        json_dumps_params={'ensure_ascii': False, 'indent': 4,}
+    )
 
 
 def product_list_api(request):
