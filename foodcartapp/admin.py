@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.shortcuts import redirect, reverse
 
-from .models import Restaurant, Product, RestaurantMenuItem, ProductCategory, Order, OrderItem
+from .models import Restaurant, Product, RestaurantMenuItem, ProductCategory, Order, OrderItem, Banner
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -119,3 +119,6 @@ class OrderAdmin(admin.ModelAdmin):
             return redirect('restaurateur:view_orders')
 
         return super().response_change(request, obj)
+
+
+admin.site.register(Banner)

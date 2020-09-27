@@ -130,3 +130,16 @@ class OrderItem(models.Model):
     class Meta:
         verbose_name = 'элемент заказа'
         verbose_name_plural = 'элементы заказа'
+
+
+class Banner(models.Model):
+    image = models.ImageField('Картинка', upload_to='banners')
+    title = models.CharField('Название', max_length=50)
+    text = models.TextField('Описание')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Баннер'
+        verbose_name_plural = 'Баннеры'
